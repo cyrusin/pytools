@@ -8,14 +8,14 @@ Created on Thu 3.14 2013
                            openoffice.org-calc
                            openoffice.org-impress
 @notice: copy windows fonts to /usr/share/fonts/win/{windows fonts}, then run
-         'sudo chmod -Rf 755 Fonts'\
-         'mkfontscale'\
-         'mkfontdir'\
-         'fc-cache -fv'\
-         'reboot'\
+         'sudo chmod -Rf 755 Fonts'
+         'mkfontscale'
+         'mkfontdir'
+         'fc-cache -fv'
+         'reboot'
 @notice: swftools(pdf2swf) need xpdf language pack.
-         Also add 'fontDir /usr/share/fonts/win' \
-                  'displayCIDFontTT Adobe-GB1 /usr/share/fonts/win/simhei.ttf'\
+         Also add 'fontDir /usr/share/fonts/win' 
+                  'displayCIDFontTT Adobe-GB1 /usr/share/fonts/win/simhei.ttf'
                   to /usr/local/xpdf-chinese-simplified/add-to-xpdfrc
 """
 import os, sys, getopt, subprocess
@@ -45,7 +45,7 @@ def transfer(f = False, i = '.', o = None, p = '', s = '.swf'):
 
 
     opts = {"-f": f, "-i": i, "-o": o, "-p": p, "-s": s}
-    print opts
+    #print opts
     all_files = []  #files to be transfered
 
     # specify the input path or file 
@@ -66,9 +66,17 @@ def transfer(f = False, i = '.', o = None, p = '', s = '.swf'):
 
     for src_file in all_files:
         if opts['-p'] is not None:
-            dest_file_name = output_path + '/' + opts['-p'] + '_' + os.path.basename(src_file) + opts['-s']
+            dest_file_name = output_path + \
+                                        '/' + \
+                                        opts['-p'] + \
+                                        '_' + \
+                                        os.path.basename(src_file) + \
+                                        opts['-s']
         else:
-            dest_file_name = output_path + '/' + os.path.basename(src_file) + opts['-s']
+            dest_file_name = output_path + \
+                                        '/' + \
+                                        os.path.basename(src_file) + \
+                                        opts['-s']
 
         if (not os.path.exists(dest_file_name)) or (opts['-f'] == True):
             returncode = _file_translation(src_file, dest_file_name)
@@ -82,22 +90,41 @@ def transfer(f = False, i = '.', o = None, p = '', s = '.swf'):
 
 
 def _file_translation(src_file, dest_file_name = None):
+    # using 'file' to get the filestyle
     p1 = subprocess.Popen(['file', src_file], stdout = subprocess.PIPE)
     p2 = subprocess.Popen(['cat'], stdin = p1.stdout, stdout = subprocess.PIPE)
     output = p2.communicate()[0]
+
+
     if "Macromedia" in output:
         subprocess.call(['cp', src_file, dest_file_name])
         return 0
 
     elif "PDF" in output:
-        subprocess.call(['/usr/bin/pdf2swf', src_file, '-o', dest_file_name, '-s', 'languagedir=/usr/local/xpdf-chinese-simplified'])
+        # use pdf2swf(swftools) to transfer from '.pdf' to '.swf' 
+        subprocess.call(['/usr/bin/pdf2swf',
+                            src_file, 
+                            '-o',
+                            dest_file_name, 
+                            '-s', 
+                            'languagedir=/usr/local/xpdf-chinese-simplified'
+                            ])
         if os.path.exists(dest_file_name):
             return 0
         else:
             return 1
     else:
+        # use unoconv to transfer from * to '.pdf' first
         subprocess.call(['unoconv', '-p', '8100', '-f', 'pdf', src_file])
-        subprocess.call(['/usr/bin/pdf2swf', '-T', '9', src_file[:-3] + 'pdf', '-o', dest_file_name, '-s', 'languagedir=/usr/local/xpdf-chinese-simplified'])
+        subprocess.call(['/usr/bin/pdf2swf', 
+                            '-T', 
+                            '9', 
+                            src_file[:-3] + 'pdf', 
+                            '-o', 
+                            dest_file_name, 
+                            '-s', 
+                            'languagedir=/usr/local/xpdf-chinese-simplified'
+                            ])
         if os.path.exists(dest_file_name):
             return 0
         else:
