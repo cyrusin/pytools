@@ -25,7 +25,7 @@ def usage():
 Usage:
         python trans_to_flash.py [option][value]...
 option:
-        -f  force translation
+        -f  force transfer
         -i  input file/path; current dir is default
         -o  output path;input path is default
         -p  add prefix to filename: (/home/my.txt -> /home/P_my.txt)
@@ -33,6 +33,15 @@ option:
 """
 
 def transfer(f = False, i = '.', o = None, p = '', s = '.swf'):
+    """
+    transfer(f = False, i = '.', o = None, p = '', s = '.swf')
+        f: Force transfer, cover the file which may exist.
+        i: The input path, current path is default.
+        o: The output path, must specify before.
+        p: The prefix added to the output file name.
+        s: The suffix added to the output file name, default '.swf'.
+
+    """
 
 
     opts = {"-f": f, "-i": i, "-o": o, "-p": p, "-s": s}
