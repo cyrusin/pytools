@@ -35,8 +35,8 @@ def main():
         thread.setDaemon(True)
         thread.start()
         
-        for host in hosts:
-            queue.put(host)
+    for host in hosts:
+        queue.put(host)
     queue.join()
 
 main()
