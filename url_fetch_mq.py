@@ -15,7 +15,6 @@ from bs4 import BeautifulSoup
 hosts = ["http://yahoo.com", \
             "http://google.com", \
             "http://baidu.com", \
-            "http://ibm.com", \
             "http://apple.com"
             ]
 
@@ -60,7 +59,7 @@ class DatamineThread(threading.Thread):
 
 start = time.time()
 def main():
-    for i in range(5):
+    for i in range(4):
         fetch_thread = FetchUrlThread(url_queue, page_queue)
         fetch_thread.setDaemon(True)
         fetch_thread.start()
@@ -68,7 +67,7 @@ def main():
     for host in hosts:
         url_queue.put(host)
 
-    for i in range(5):
+    for i in range(4):
         mine_thread = DatamineThread(page_queue)
         mine_thread.setDaemon(True)
         mine_thread.start()
