@@ -35,7 +35,7 @@ class FetchUrlThread(threading.Thread):
     def run(self):
         while True:
             host = self.url_queue.get()
-            url = urllib2.urlopen()
+            url = urllib2.urlopen(host)
             chunk = url.read()
             self.page_queue.put(chunk)
             self.url_queue.task_done()
