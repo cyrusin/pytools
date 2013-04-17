@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 #@Author: cyrusin
+"""Url Fetch Tool based on multi-threading.
+
+"""
 import threading
 import time
 import urllib2
@@ -21,7 +24,10 @@ class ThreadUrl(threading.Thread):
         threading.Thread.__init__(self)
         self.queue = queue
 
-    def run(self):
+    def run(self):              
+        """run(self): overriding the run() method of threading.Thread class.
+
+        """
         while True:
             host = self.queue.get()
             url = urllib2.urlopen(host)
