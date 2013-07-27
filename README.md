@@ -7,7 +7,7 @@ Details
 ----------------------------
 trans_to_flash.py: 
 
-    transfer document(*.txt, *.doc, *.pdf, *.odt) to .swf whether the coding of document is UTF-8 or GB18030.
+    transfer *.txt, *.doc, *.pdf, *.odt to .swf whether the document is encoding in UTF-8 or GB18030.
     Install openoffice\unoconv\swftools on your *nix first.
   
 url_fetch.py & url_fetch_mq.py:
