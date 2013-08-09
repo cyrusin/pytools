@@ -19,3 +19,7 @@ file_processing.py:
 
     Module used to process file fast.
     Implemented with coroutine and yield expression.
+
+oop_utils.py:
+
+    Module used to implement your idea in OOP.
