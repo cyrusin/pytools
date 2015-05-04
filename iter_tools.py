@@ -70,3 +70,16 @@ def unique_everseen(iterable, key=None):
             if k not in seen:
                 seen_add(k)
                 yield item
+
+def iter_except(func, exception, first=None):
+    '''Call a function repeatedly until an exception is raised.
+    such as:
+    dict_pop_iter = iter_except(d.popitem, KeyError)
+    '''
+    try:
+        if first is not None:
+            yield first()
+        while 1:
+            yield func()
+    except exception:
+        pass
