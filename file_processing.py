@@ -17,6 +17,8 @@ import os
 import fnmatch
 import gzip
 import bz2
+import sys
+
 def coroutine(func):
     '''coroutine(func)
 
