@@ -26,3 +26,6 @@ Details
 
 - iter_tools.py:
     >some useful tools based on python's itertools mobule.
+
+- str_util.py
+    >some useful tools in manipulation of str.
