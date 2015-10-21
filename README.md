@@ -34,3 +34,9 @@ Details
     >an echo server based on select
     >run it with "python echo_server_select.py"
     >connect it with tcp like "telnet 127.0.0.1 8080"
+
+- echo_server_poll.py
+    >an echo server based on poll
+    >run it with "python echo_server_poll.py <host:port>"
+    >connect it with tcp like "telnet 127.0.0.1:8080"
+    >send "EOF" if you want to close the connection
