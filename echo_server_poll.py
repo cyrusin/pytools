@@ -95,7 +95,7 @@ while True:
                 poller.modify(sock, READ_ONLY)
             else:
                 print 'Send', msg, ' to ', sock.getpeername()
-                sock.send(msg)
+                sock.send(msg+'\r\n')
         elif event & select.POLLERR:
             print 'Exception in connection to client: ', sock.getpeername()
             poller.unregister(sock)
