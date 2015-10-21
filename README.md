@@ -29,3 +29,8 @@ Details
 
 - str_util.py
     >some useful tools in manipulation of str.
+
+- echo_server_select.py
+    >an echo server based on select
+    >run it with "python echo_server_select.py"
+    >connect it with tcp like "telnet 127.0.0.1 8080"
