@@ -41,7 +41,7 @@ while True:
         if s is listen_socket: #监听socket
             connection, client_addr = s.accept() #connection is the client socket obj 
             connection.setblocking(0)
-            write_list.append(connection)
+            read_list.append(connection)
             connect_to_msgq[connection] = Queue.Queue()
         else:
             data = s.recv(1024)
@@ -51,7 +51,7 @@ while True:
                 if s not in write_list:
                     write_list.append(s)
             else: #连接已关闭
-                print 'Close connection: ' + client_addr
+                print 'Close connection: ', client_addr
                 #读、写、消息队列将当前连接全部清除
                 if s in write_list:
                     write_list.remove(s)
@@ -66,13 +66,13 @@ while True:
             #get_nowait()相当于block=False
             msg = connect_to_msgq[s].get_nowait()
         except Queue.Empty:
-            print 'client: ' + s.getpeername() + 'msg queue is empty'
+            print 'client: ', s.getpeername(), 'msg queue is empty'
             write_list.remove(s)
         else:
             s.send(msg)
 
     for s in exceptional:
-        print 'Exception in connection to client: ' + s.getpeername()
+        print 'Exception in connection to client: ', s.getpeername()
         read_list.remove(s)
         if s in write_list:
             write_list.remove(s)
