@@ -19,10 +19,10 @@ listen_socket.bind(server_address)
 listen_socket.listen(10)
 
 #select轮询的sockets: 监听读事件
-read_set = [listen_socket]
+read_list = [listen_socket]
 
 #监听写事件
-write_set = []
+write_list = []
 
 #消息映射: connection : message queue
 connect_to_msgq = dict()
@@ -32,7 +32,7 @@ timeout = 10
 
 #select IO复用处理连接
 while True:
-    readable, writeable, exceptional = select.select(read_set, write_set, read_set, timeout)
+    readable, writeable, exceptional = select.select(read_list, write_list, read_list, timeout)
     if not (readable or writeable or exceptional):
         print u'本次select调用超时...'
         continue
@@ -41,21 +41,21 @@ while True:
         if s is listen_socket: #监听socket
             connection, client_addr = s.accept() #connection is the client socket obj 
             connection.setblocking(0)
-            write_set.append(connection)
+            write_list.append(connection)
             connect_to_msgq[connection] = Queue.Queue()
         else:
             data = s.recv(1024)
             if data:
                 print 'Get ', data, ' from client:', s.getpeername()
                 connect_to_msgq[connection].put(data)
-                if s not in write_set:
-                    write_set.append(s)
+                if s not in write_list:
+                    write_list.append(s)
             else: #连接已关闭
                 print 'Close connection: ' + client_addr
-                #读、写、消息队列将当前连接全部清楚
-                if s in write_set:
-                    write_set.remove(s)
-                read_set.remove(s)
+                #读、写、消息队列将当前连接全部清除
+                if s in write_list:
+                    write_list.remove(s)
+                read_list.remove(s)
                 s.close()
                 connect_to_msgq.pop(s)
 
@@ -67,15 +67,15 @@ while True:
             msg = connect_to_msgq[s].get_nowait()
         except Queue.Empty:
             print 'client: ' + s.getpeername() + 'msg queue is empty'
-            write_set.remove(s)
+            write_list.remove(s)
         else:
             s.send(msg)
 
     for s in exceptional:
         print 'Exception in connection to client: ' + s.getpeername()
-        read_set.remove(s)
-        if s in write_set:
-            write_set.remove(s)
+        read_list.remove(s)
+        if s in write_list:
+            write_list.remove(s)
         s.close()
         connect_to_msgq.pop(s)
 
