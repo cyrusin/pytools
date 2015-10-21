@@ -9,7 +9,7 @@ import socket
 import sys
 import Queue
 
-if len(sys.argv) != 3:
+if len(sys.argv) != 2:
     print "usage: python echo_server_poll.py 127.0.0.1:8080"
 
 try:
@@ -68,9 +68,16 @@ while True:
             else:
                 data = sock.recv(1024)
                 if data:
-                    print 'Get data: ', data, 'from client: ', sock.getpeername()
-                    cli_msg_q[sock].put(data)
-                    poller.modify(sock, READ_WRITE)
+                    data = data.strip()
+                    if data == 'EOF':
+                        print 'Close connection to client: ', sock.getpeername(), '(EOF)'
+                        poller.unregister(sock)
+                        sock.close()
+                        cli_msg_q.pop(sock)
+                    else:
+                        print 'Get data: ', data, 'from client: ', sock.getpeername()
+                        cli_msg_q[sock].put(data)
+                        poller.modify(sock, READ_WRITE)
                 else:
                     print 'Close connection to client: ', sock.getpeername()
                     poller.unregister(sock)
