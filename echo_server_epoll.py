@@ -89,7 +89,7 @@ while True:
                 epoll.modify(sock, select.EPOLLIN)
             else:
                 print 'Send ', response, 'to client: ', sock.getpeername()
-                sock.send(response)
+                sock.send(response+'\r\n')
         elif events & select.EPOLLHUP:
             print 'Close connection with client: ', sock.getpeername()
             epoll.unregister(sock)
