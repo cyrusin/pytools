@@ -39,4 +39,10 @@ Details
     >an echo server based on poll
     >run it with "python echo_server_poll.py <host:port>"
     >connect it with tcp like "telnet 127.0.0.1:8080"
-    >send "EOF" if you want to close the connection
+    >send "End" if you want to close the connection
+
+- echo_server_epoll.py
+    >an echo server based on epoll
+    >run it with "python echo_server_epoll.py <host:port>"
+    >connect it with tcp like "telnet 127.0.0.1:8080"
+    >send "End" if you want to close the connection
