@@ -69,8 +69,8 @@ while True:
                 data = sock.recv(1024)
                 if data:
                     data = data.strip()
-                    if data == 'EOF':
-                        print 'Close connection to client: ', sock.getpeername(), '(EOF)'
+                    if data == 'End':
+                        print 'Close connection to client: ', sock.getpeername(), '(End)'
                         poller.unregister(sock)
                         sock.close()
                         cli_msg_q.pop(sock)
