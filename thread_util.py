@@ -42,3 +42,17 @@ class Worker(threading.Thread):
         self._dismissed.set()
 
 
+class Task(object):
+    u'''封装原函数和参数
+    Attributes:
+    @ID: unique task id
+    @do: raw function
+    @args & kwargs: raw params of raw function
+    @error: status when calling func(*args, **kwargs)
+    '''
+    def __init__(self, func, args=None, kwargs=None):
+        self.ID = id(self)
+        self.do = func
+        self.args = args or []
+        self.kwargs = kwargs or {}
+        self.error = False
