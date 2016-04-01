@@ -26,6 +26,8 @@ class Worker(threading.Thread):
                 task = self._tasks.get(block=True, timeout=self._timeout)
             except Queue.Empty:
                 continue
+            #if current thread is dismissed when blocking
+            #exit and put the todo task back to the task queue
             if self._dismissed.is_set():
                 self._tasks.put(task)
                 break 
@@ -47,13 +49,18 @@ class Task(object):
     @do: raw function
     @args & kwargs: raw params of raw function
     @error: status when calling func(*args, **kwargs)
+    @exception_handler: <function>, use `exception_handler(exception)` to handle exception
     '''
-    def __init__(self, func, *args, **kwargs):
+    def __init__(self, func, args=None, kwargs=None, exception_handler=None):
         self.ID = id(self)
         self.do = func
         self.args = args or []
         self.kwargs = kwargs or {}
         self.error = False
+        self.handle_exception = exception_handler or self._handle_exception
+
+    def _handle_exception(self, e):
+        pass
 
 
 class ThreadPool(object):
@@ -82,8 +89,8 @@ class ThreadPool(object):
                 break
             task, result = self.result_queue.get(block=True)
             try:
-                if task.error and task.exc_callback:
-                    task.exc_callback(task, result)
+                if task.error:
+                    task.handle_exception(result)
             except:
                 pass
             del self.tasks[task.ID]
@@ -97,10 +104,16 @@ class ThreadPool(object):
 
 if __name__ == "__main__":
     def do_work(i):
-        print "This is thread %s" % i
-    p = ThreadPool(3)
+        print "One thread is processing task: %s\n" % i
+
+    MAX_WORKERS = 3
+    print "Create thread pool with %s threads" % MAX_WORKERS
+
+    pool = ThreadPool(MAX_WORKERS)
     for i in range(100):
-        r = Task(do_work, i)
-        p.submit(r)
-    p.poll()
-    p.join()
+        r = Task(do_work, args=[i])
+        pool.submit(r)
+    pool.poll()
+    pool.join()
+
+    print "All task done"
