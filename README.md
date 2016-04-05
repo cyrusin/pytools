@@ -57,3 +57,6 @@ Details
 
 - thread_util.py
     >Useful tools for threading
+
+- priorityQ.py
+    >A simple priority queue 
