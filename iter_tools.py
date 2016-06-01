@@ -100,6 +100,11 @@ def n_grams(lst, n):
     '''
     return zip(*([iter(lst[i:]) for i in range(n)]))
 
+def switch_kv(d):
+    '''switch_kv(dict) -> dict, but `key:value` is switched by input dict
+    '''
+    return dict(zip(d.values(), d.keys()))
+
 class Alphabet(object):
     '''iterable object that give you alphabet with the number you want.
     Such as:
