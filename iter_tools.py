@@ -92,6 +92,14 @@ def iter_except(func, exception, first=None):
     except exception:
         pass
 
+def n_grams(lst, n):
+    '''Return new list based on `lst`
+    Such as:
+    lst=[1, 2, 3, 4, 5, 6]
+    n_grams(lst, 2) -> [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6)]
+    '''
+    return zip(*([iter(lst[i:]) for i in range(n)]))
+
 class Alphabet(object):
     '''iterable object that give you alphabet with the number you want.
     Such as:
