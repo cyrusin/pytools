@@ -56,6 +56,14 @@ def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return itertools.izip_longest(fillvalue=fillvalue, *args)
 
+def group_adjacent(lst, k):
+    u'''Generate a new list based on `lst`
+    such as:
+    lst = [0, 1, 2, 3, 4, 5]
+    group_adjacent(lst, 2) -> [(0, 1), (2, 3), (4, 5)]
+    '''
+    return zip(*([iter(lst)] * k))
+
 def unique_everseen(iterable, key=None):
     '''List items unique ever seen, preserving order'''
     seen = set()
@@ -83,7 +91,6 @@ def iter_except(func, exception, first=None):
             yield func()
     except exception:
         pass
-
 
 class Alphabet(object):
     '''iterable object that give you alphabet with the number you want.
