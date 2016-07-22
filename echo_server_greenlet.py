@@ -32,7 +32,7 @@ def main_loop():
             for s in can_send:
                 grn_tasks.append(('grn_r', send_wait.pop(s)))
 
-        g_state, g_task =  grn_tasks.popleft()
+        g_state, g_task = grn_tasks.popleft()
         if g_state == 'grn_r': # greenlet is active, just switch to it
             try:
                 if g_task.dead:
@@ -104,8 +104,8 @@ def echo_handler(req):
 
 # Init first greenlet for server
 client_handler = functools.partial(handle_client, echo_handler)
-server_task = functools.partial(server, (host, port), client_handler)
+server_task = functools.partial(server, (host, int(port)), client_handler)
 grn_server = greenlet.greenlet(server_task)
 
-grn_tasks.append(grn_server)
+grn_tasks.append(('grn_r', grn_server))
 main_loop()
