@@ -7,6 +7,7 @@ url: https://docs.python.org/2/library/itertools.html
 
 import itertools
 import operator
+import collections
 
 def take(n, iterable):
     '''Return first n items of the iterable as a list'''
@@ -104,6 +105,11 @@ def switch_kv(d):
     '''switch_kv(dict) -> dict, but `key:value` is switched by input dict
     '''
     return dict(zip(d.values(), d.keys()))
+
+def remove_dup_items_ordered(lst):
+    '''such as: [1, 2, 2, 6, 3, 1, 4, 3] -> [1, 2, 6, 3, 4]
+    '''
+    return collections.OrderedDict.fromkeys(lst).keys()
 
 class Alphabet(object):
     '''iterable object that give you alphabet with the number you want.
