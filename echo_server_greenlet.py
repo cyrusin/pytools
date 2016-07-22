@@ -4,24 +4,43 @@
 '''
 import collections
 import functools
+from multiprocessing import cpu_count
 import socket
 import sys
 from select import select
 import greenlet
 
-if len(sys.argv) != 2:
-    print "Usage: python echo_server_greenlet.py 127.0.0.1:8080"
+from concurrent.futures import ThreadPoolExecutor as Pool
 
-try:
-    host, port = sys.argv[1].split(':')
-except Exception, e:
-    print e
-    sys.exit(-1)
-
+# global settings
 grn_tasks = collections.deque()
 recv_wait = {}
 send_wait = {}
+pool = Pool(cpu_count()) # start thread's number as the cpu count
+future_wait = {}
+future_notify, future_event = socket.socketpair()
 
+
+# future_done & future_monitor
+# they are used to wake up the main_loop to avoid I/O starvation
+# when you have long-time cost task to do, you can just do like:
+#   def request_handler():
+#       ...
+#       future = pool.submit(task,..) 
+#       grn_parent.switch(('future', future))
+# this will just pause the hanler, and put the task to the thread pool,
+# when it is finished, the handler will be resumed.
+def future_done(future):
+    grn_tasks.append(('grn_r', future_wait.pop(future)))
+    future_notify.send(b'x')
+
+def future_monitor():
+    current = greenlet.getcurrent()
+    parent = current.parent
+    while True:
+        parent.switch(('ev_recv', future_event))
+        future_event.recv(100)
+grn_tasks.append(('grn_r', greenlet.greenlet(future_monitor)))
 
 def main_loop():
     while any([grn_tasks, recv_wait, send_wait]):
@@ -42,6 +61,9 @@ def main_loop():
                     recv_wait[sw_what] = g_task
                 elif sw_signal == 'ev_send':
                     send_wait[sw_what] = g_task
+                elif sw_signal == 'future': # future needs callback
+                    future_wait[sw_what] = g_task
+                    sw_what.add_done_callback(future_done)
             except Exception:
                 continue
         elif g_state == 'grn_n': # init task in new greenlet
@@ -99,13 +121,24 @@ def handle_client(handle_request, client):
     print 'closed'
 
 
-def echo_handler(req):
-    return req + b'\n'
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print "Usage: python echo_server_greenlet.py 127.0.0.1:8080"
+    
+    try:
+        host, port = sys.argv[1].split(':')
+    except Exception, e:
+        print e
+        sys.exit(-1)
 
-# Init first greenlet for server
-client_handler = functools.partial(handle_client, echo_handler)
-server_task = functools.partial(server, (host, int(port)), client_handler)
-grn_server = greenlet.greenlet(server_task)
+    #simple echo handler
+    def echo_handler(req):
+        return req + b'\n'  
 
-grn_tasks.append(('grn_r', grn_server))
-main_loop()
+    # Init first greenlet for server
+    client_handler = functools.partial(handle_client, echo_handler)
+    server_task = functools.partial(server, (host, int(port)), client_handler)
+    grn_server = greenlet.greenlet(server_task)
+    
+    grn_tasks.append(('grn_r', grn_server))
+    main_loop()
